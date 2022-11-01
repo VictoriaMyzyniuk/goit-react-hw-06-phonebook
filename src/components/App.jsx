@@ -1,19 +1,27 @@
-import { useState, useEffect } from 'react';
+// import { useState, useEffect } from 'react';
 import { ContactList } from 'components/ContactList/ContactList';
 import { nanoid } from 'nanoid';
 import { Filter } from 'components/Filter/Filter';
 import { ContactForm } from 'components/ContactForm/ContactForm';
 import { Container } from 'components/App.styled';
 
-export const App = () => {
-  const [contacts, setContacts] = useState(() => {
-    return JSON.parse(window.localStorage.getItem('contacts')) ?? [];
-  });
-  const [filter, setFilter] = useState('');
+import { useSelector, useDispatch } from 'react-redux';
+import { addContacts, updateFilter, deleteContact } from 'redux/contactsSlice';
 
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
+export const App = () => {
+  const dispatch = useDispatch();
+  const { contactsList, filter } = useSelector(state => state.contacts);
+
+  // const [contacts, setContacts] = useState(() => {
+  // return JSON.parse(window.localStorage.getItem('contacts')) ?? [];
+  // });
+
+  // const [filter, setFilter] = useState('');
+
+  // useEffect(() => {
+  //   // localStorage.setItem('contacts', JSON.stringify(contacts));
+  //   console.log(contactsState);
+  // }, [contactsState]);
 
   const handleSubmit = (values, { resetForm }) => {
     resetForm();
@@ -23,10 +31,10 @@ export const App = () => {
       name,
       number,
     };
-    const dublicateContact = findDublicateContact(contact, contacts);
+    const dublicateContact = findDublicateContact(contact, contactsList);
     dublicateContact
       ? alert(`${contact.name} is already in contacts`)
-      : setContacts([...contacts, { ...values, id: nanoid() }]);
+      : dispatch(addContacts({ ...values, id: nanoid() }));
   };
 
   const findDublicateContact = (contact, contactsList) => {
@@ -36,18 +44,19 @@ export const App = () => {
   };
 
   const onFilterChange = e => {
-    setFilter(e.currentTarget.value);
+    dispatch(updateFilter(e.currentTarget.value));
   };
 
   const getNeeddedCard = () => {
     const normalizedFilter = filter.toLowerCase();
-    return contacts.filter(contact =>
+    console.log('contactsList', contactsList);
+    return contactsList.filter(contact =>
       contact.name.toLowerCase().includes(normalizedFilter)
     );
   };
 
   const deleteCard = contactId => {
-    setContacts(contacts.filter(contact => contact.id !== contactId));
+    dispatch(deleteContact(contactId));
   };
 
   return (
@@ -55,7 +64,7 @@ export const App = () => {
       <h1>Phonebook</h1>
       <ContactForm onSubmit={handleSubmit} />
 
-      {!!contacts.length && (
+      {!!contactsList.length && (
         <>
           <h2>Contacts</h2>
           <Filter value={filter} onFilterChange={onFilterChange} />
