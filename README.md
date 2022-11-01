@@ -1,4 +1,4 @@
-**Read in other languages: [Русский](README.md), [Polska](README.pl.md),
+<!-- **Read in other languages: [Русский](README.md), [Polska](README.pl.md),
 [English](README.en.md), [Spanish](README.es.md).**
 
 # React homework template
@@ -88,4 +88,4 @@
    проходит линтинг и сборку перед деплоем.
 3. Если все шаги прошли успешно, собранная продакшн версия файлов проекта
    отправляется в ветку `gh-pages`. В противном случае, в логе выполнения
-   скрипта будет указано в чем проблема.
+   скрипта будет указано в чем проблема. -->
