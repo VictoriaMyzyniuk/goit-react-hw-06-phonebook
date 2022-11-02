@@ -6,22 +6,16 @@ import { ContactForm } from 'components/ContactForm/ContactForm';
 import { Container } from 'components/App.styled';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { addContacts, updateFilter, deleteContact } from 'redux/contactsSlice';
+import {
+  addContact,
+  updateFilter,
+  deleteContact,
+  getContactsData,
+} from 'redux/contactsSlice';
 
 export const App = () => {
   const dispatch = useDispatch();
-  const { contactsList, filter } = useSelector(state => state.contacts);
-
-  // const [contacts, setContacts] = useState(() => {
-  // return JSON.parse(window.localStorage.getItem('contacts')) ?? [];
-  // });
-
-  // const [filter, setFilter] = useState('');
-
-  // useEffect(() => {
-  //   // localStorage.setItem('contacts', JSON.stringify(contacts));
-  //   console.log(contactsState);
-  // }, [contactsState]);
+  const { contactsList, filter } = useSelector(getContactsData);
 
   const handleSubmit = (values, { resetForm }) => {
     resetForm();
@@ -34,7 +28,7 @@ export const App = () => {
     const dublicateContact = findDublicateContact(contact, contactsList);
     dublicateContact
       ? alert(`${contact.name} is already in contacts`)
-      : dispatch(addContacts({ ...values, id: nanoid() }));
+      : dispatch(addContact({ ...values, id: nanoid() }));
   };
 
   const findDublicateContact = (contact, contactsList) => {
@@ -49,7 +43,7 @@ export const App = () => {
 
   const getNeeddedCard = () => {
     const normalizedFilter = filter.toLowerCase();
-    console.log('contactsList', contactsList);
+
     return contactsList.filter(contact =>
       contact.name.toLowerCase().includes(normalizedFilter)
     );
