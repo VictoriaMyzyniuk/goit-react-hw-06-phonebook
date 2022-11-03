@@ -1,4 +1,3 @@
-import { PropTypes } from 'prop-types';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import {
@@ -8,6 +7,9 @@ import {
   SubmitButton,
   Error,
 } from 'components/ContactForm/ContactForm.styled';
+import { useSelector, useDispatch } from 'react-redux';
+import { addContact, getContactsData } from 'redux/contactsSlice';
+import { nanoid } from 'nanoid';
 
 const schema = yup.object().shape({
   name: yup
@@ -33,12 +35,37 @@ const initialValues = {
   number: '',
 };
 
-export const ContactForm = ({ onSubmit }) => {
+export const ContactForm = () => {
+  const dispatch = useDispatch();
+  const { contactsList } = useSelector(getContactsData);
+
+  const handleSubmit = (values, { resetForm }) => {
+    const { name, number } = values;
+
+    const contact = {
+      name,
+      number,
+    };
+
+    const dublicateContact = findDublicateContact(contact, contactsList);
+    if (dublicateContact) {
+      alert(`${contact.name} is already in contacts`);
+    } else {
+      dispatch(addContact({ ...values, id: nanoid() }));
+      resetForm();
+    }
+  };
+
+  const findDublicateContact = (contact, contactsList) => {
+    return contactsList.find(
+      item => item.name.toLowerCase() === contact.name.toLowerCase()
+    );
+  };
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={schema}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
     >
       <FormEl autoComplete="off">
         <Label htmlFor="name">Name</Label>
@@ -52,8 +79,4 @@ export const ContactForm = ({ onSubmit }) => {
       </FormEl>
     </Formik>
   );
-};
-
-ContactForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
 };
